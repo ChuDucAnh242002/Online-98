@@ -6,6 +6,7 @@ CARD_NUMS = ["A", "02", "03", "04", "05", "06", "07", "08", "09", "10", "J", "Q"
 
 # Size
 CARD_WIDTH, CARD_HEIGHT = 150, 150
+CARD_POS = (500, 200)
 
 # Dict of card sorted by type
 CARDS = {}
@@ -25,19 +26,16 @@ class Card:
         self.num = num
         self.point = point
         self.power = None
-        self.image = CARDS[type][num]
-        self.rect = self.image.get_rect()
-        self.back_image = CARD_BACK
 
     def draw(self, win, x, y, back = False):
         if back:
-            win.blit(self.back_image, (x, y))
+            win.blit(CARD_BACK, (x, y))
             return
-        win.blit(self.image, (x, y))
+        win.blit(CARDS[self.type][self.num], (x, y))
 
-    def draw_play(self, win, x, y):
-        image = pygame.transform.scale(self.image, (300, 300))
-        win.blit(image, (x, y))
+    def draw_play(self, win):
+        image = pygame.transform.scale(CARDS[self.type][self.num], (300, 300))
+        win.blit(image, (CARD_POS[0], CARD_POS[1]))
 
     def effect(self, game):
         pass

@@ -1,20 +1,17 @@
-import pygame
-import os
 import random
+import pygame
 
-from card import Card, Card_4, Card_A_Heart, Card_A_Spades, Card_J, Card_Q, Card_K, CARD_TYPES
+from card import Card, Card_4, Card_A_Heart, Card_A_Spades, Card_J, Card_Q, Card_K, CARD_TYPES, CARD_BACK
 
 # Size
 DECK_WIDTH, DECK_HEIGHT = 300, 300
-
-CARD_BACK = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG', 'Cards', 'card_back.png')), (DECK_WIDTH, DECK_HEIGHT))
+DECK_POS_X, DECK_POS_Y = 300, 200
 
 class Deck:
-    def __init__(self, x, y):
+    def __init__(self):
         self.cards = self.init_cards()
-        self.image = CARD_BACK
-        self.x = x
-        self.y = y
+        self.x = DECK_POS_X
+        self.y = DECK_POS_Y
 
     def init_cards(self):
         cards = []
@@ -38,7 +35,8 @@ class Deck:
         return cards
 
     def draw(self, win):
-        win.blit(self.image, (self.x, self.y))
+        image = pygame.transform.scale(CARD_BACK, (DECK_WIDTH, DECK_HEIGHT))
+        win.blit(image, (self.x, self.y))
 
     def remove_card(self):
         self.cards.pop()

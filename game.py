@@ -1,8 +1,10 @@
+from deck import Deck
+
 class Game:
-    def __init__(self, id, players, deck):
+    def __init__(self, id):
         self.id = id
-        self.players = players
-        self.deck = deck
+        self.players = []
+        self.deck = Deck()
         self.ready = False
         self.play_card = None
         self.play_cards = []
@@ -23,7 +25,7 @@ class Game:
         self.play_cards.append(card)
         self.cur_player.play_card = card  
         self.cur_player.check_play_card(self.sum)
-        self.sum += (card.point)
+        self.sum += card.point
         card.effect(self)  
 
     def get_play_card(self):

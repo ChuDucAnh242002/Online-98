@@ -32,8 +32,8 @@ class Player(Node):
     def __init__(self, id):
         super().__init__(id)
         self.cards = []
-        self.rect1 = None
-        self.rect2 = None
+        self.rect1 = pygame.Rect(390, 550, CARD_WIDTH, CARD_HEIGHT)
+        self.rect2 = pygame.Rect(500, 550, CARD_WIDTH, CARD_HEIGHT)
         self.increase_button = None
         self.decrease_button = None
         self.kill_buttons = []
@@ -48,12 +48,7 @@ class Player(Node):
         if cur:
             back = False
         for num, card in enumerate(self.cards):
-            if num == 0:
-                self.rect1 = pygame.Rect(x + 90 + 110*num, y, CARD_WIDTH, CARD_HEIGHT)
-                card.draw(win, self.rect1.x, self.rect1.y, back)
-            else:
-                self.rect2 = pygame.Rect(x + 90 + 110*num, y, CARD_WIDTH, CARD_HEIGHT)
-                card.draw(win, self.rect2.x, self.rect2.y, back)
+            card.draw(win, x + 90 + 110*num, y, back)
 
     def add_card(self, card):
         self.cards.append(card)
@@ -89,8 +84,8 @@ class Player(Node):
                 self.increase_button = Button(BUTTON_POS_2[0], BUTTON_POS_2[1], "+30", 1)
             self.decrease_button = Button(BUTTON_POS_3[0], BUTTON_POS_3[1], "-30", 1)
 
-        if self.play_card.power == "K":
-            self.init_k_child(self.child, self.id)
+        # if self.play_card.power == "K":
+        #     self.init_k_child(self.child, self.id)
 
     def init_k_child(self, child_node, p):
         if child_node == None:
