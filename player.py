@@ -20,10 +20,15 @@ class Player(Node):
         super().__init__(id)
         self.cards = []
 
-    def draw(self, win, x, y):
+    def draw(self, win, x, y, cur = False):
         text = f"Player {self.id}"
         self.text = FONT.render(text, 1, BLACK)
         win.blit(self.text, (x, y))
+        back = True
+        if cur:
+            back = False
+        for num, card in enumerate(self.cards):
+            card.draw(win, x + 100 + 100*num, y, back)
 
     def add_card(self):
         pass

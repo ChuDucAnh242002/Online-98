@@ -29,21 +29,21 @@ FPS = 60
 bg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'Background', 'background.jpg')), (WIDTH, HEIGHT))
 
 # Size and pos
+BUTTON_POS = (375, 312)
 DECK_POS_X, DECK_POS_Y = 300, 200
 PLAYER_POS_0_X, PLAYER_POS_0_Y = 300, 550
 PLAYER_POS_1_X, PLAYER_POS_1_Y = 0, 300
 PLAYER_POS_2_X, PLAYER_POS_2_Y = 300, 10
 PLAYER_POS_3_X, PLAYER_POS_3_Y = 750, 10
-PLAYER_POS_4_X, PLAYER_POS_4_Y = 900, 300
+PLAYER_POS_4_X, PLAYER_POS_4_Y = 850, 300
 PLAYER_POS_5_X, PLAYER_POS_5_Y = 750, 550
-
 
 
 def draw_bg():
     WIN.blit(bg, (0, 0))  
 
 def draw_players(cur_player):
-    cur_player.draw(WIN, PLAYER_POS_0_X, PLAYER_POS_0_Y)
+    cur_player.draw(WIN, PLAYER_POS_0_X, PLAYER_POS_0_Y, True)
     # print(cur_player.parent.id)
     draw_child(cur_player.child, cur_player.id)
     draw_parent(cur_player.parent, cur_player.id)
@@ -73,11 +73,12 @@ def draw_parent(cur_player, p):
     draw_pos(cur_player, p)
     draw_parent(cur_player.parent, p)
 
-
 def draw_win(game, players, deck, cur_player):
     draw_bg()
-    deck.draw(WIN)
     draw_players(cur_player)
+    
+    if game.ready == True:
+        deck.draw(WIN)
 
 def init_player():
     """
@@ -105,18 +106,29 @@ def main():
     deck = Deck(DECK_POS_X, DECK_POS_Y)
     game = Game(0, players, deck)
 
+    start_button = Button(BUTTON_POS[0], BUTTON_POS[1], "Start game")
 
     run = True
 
     while run:
         CLOCK.tick(FPS)
         draw_win(game, players, deck, cur_player)
+        if game.ready == False:
+            start_button.draw(WIN)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
                 sys.exit()
-            
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if start_button != None:
+                    if start_button.click(pos):
+                        game.ready = True
+                        game.play()
+                        start_button = None
 
         pygame.display.update()
 
@@ -127,7 +139,7 @@ def lobby():
 
 def menu():
     run = True
-    menu_button = Button(375, 312, "Click to join the server")
+    menu_button = Button(BUTTON_POS[0], BUTTON_POS[1], "Click to join the server")
 
     while run:
         CLOCK.tick(FPS)

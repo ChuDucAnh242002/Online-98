@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 
 from card import Card, CARD_TYPES
 
@@ -32,8 +33,8 @@ class Deck:
     def remove_deck(self):
         pass
 
-    def suffle(self):
-        pass
+    def shuffle(self):
+        random.shuffle(self.cards)
 
     def reset(self):
         pass

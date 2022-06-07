@@ -5,10 +5,11 @@ CARD_TYPES = ["spades", "clubs", "diamonds", "hearts"]
 CARD_NUMS = ["A", "02", "03", "04", "05", "06", "07", "08", "09", "10", "J", "Q", "K"]
 
 # Size
-CARD_WIDTH, CARD_HEIGHT = 64, 64
+CARD_WIDTH, CARD_HEIGHT = 150, 150
 
 # Dict of card sorted by type
 CARDS = {}
+CARD_BACK = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG', 'Cards', 'card_back.png')), (CARD_WIDTH, CARD_HEIGHT))
 
 for card_type in CARD_TYPES:
     card_images = []
@@ -26,6 +27,13 @@ class Card:
         self.num = num
         self.image = CARDS[type][num]
         self.rect = self.image.get_rect()
+        self.back_image = CARD_BACK
+
+    def draw(self, win, x, y, back = False):
+        if back:
+            win.blit(self.back_image, (x, y))
+            return
+        win.blit(self.image, (x, y))
 
 class Card_4(Card):
     def __init__(self, type, num):
