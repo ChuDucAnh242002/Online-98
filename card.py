@@ -53,6 +53,7 @@ class Card_4(Card):
 class Card_A_Heart(Card):
     def __init__(self, type, num, point):
         super().__init__(type, num, point)
+        self.power = "A_H"
 
     def effect(self, game):
         game.sum = 98
@@ -60,6 +61,7 @@ class Card_A_Heart(Card):
 class Card_A_Spades(Card):
     def __init__(self, type, num, point):
         super().__init__(type, num, point)
+        self.power = "A_S"
 
     def effect(self, game):
         game.sum = 0
@@ -67,6 +69,7 @@ class Card_A_Spades(Card):
 class Card_J(Card):
     def __init__(self, type, num, point):
         super().__init__(type, num, point)
+        self.power = "J"
 
 class Card_Q(Card):
     def __init__(self, type, num, point):

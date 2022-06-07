@@ -17,9 +17,8 @@ BUTTON_WIDTH_2, BUTTON_HEIGHT_2 = 75, 75
 BLUE_BUTTON_1 = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'UI', 'blue_button1.png')), (BUTTON_WIDTH, BUTTON_HEIGHT))
 BLUE_BUTTON_2 = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'UI', 'blue_button2.png')), (BUTTON_WIDTH_2, BUTTON_HEIGHT_2))
 BLUE_BUTTON_3 = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'UI', 'blue_button3.png')), (BUTTON_WIDTH_2, BUTTON_HEIGHT_2))
-BLUE_BUTTON_4 = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'UI', 'blue_button4.png')), (BUTTON_WIDTH_2, BUTTON_HEIGHT_2))
 
-BLUE_BUTTON = [BLUE_BUTTON_1, BLUE_BUTTON_2, BLUE_BUTTON_3, BLUE_BUTTON_4]
+BLUE_BUTTON = [BLUE_BUTTON_1, BLUE_BUTTON_2, BLUE_BUTTON_3]
 
 
 class Button:

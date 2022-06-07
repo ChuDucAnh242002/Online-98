@@ -38,6 +38,7 @@ class Player(Node):
         self.decrease_button = None
         self.kill_buttons = []
         self.play_card = None
+        self.locked = False
 
     def draw(self, win, x, y, cur = False):
         text = f"Player {self.id}"
@@ -48,10 +49,10 @@ class Player(Node):
             back = False
         for num, card in enumerate(self.cards):
             if num == 0:
-                self.rect1 = pygame.Rect(x + 100 + 100*num, y, CARD_WIDTH, CARD_HEIGHT)
+                self.rect1 = pygame.Rect(x + 90 + 110*num, y, CARD_WIDTH, CARD_HEIGHT)
                 card.draw(win, self.rect1.x, self.rect1.y, back)
             else:
-                self.rect2 = pygame.Rect(x + 100 + 100*num, y, CARD_WIDTH, CARD_HEIGHT)
+                self.rect2 = pygame.Rect(x + 90 + 110*num, y, CARD_WIDTH, CARD_HEIGHT)
                 card.draw(win, self.rect2.x, self.rect2.y, back)
 
     def add_card(self, card):
@@ -82,9 +83,10 @@ class Player(Node):
     def get_kill_buttons(self):
         return self.kill_buttons
 
-    def check_play_card(self):
+    def check_play_card(self, sum):
         if self.play_card.power == "Q":
-            self.increase_button = Button(BUTTON_POS_2[0], BUTTON_POS_2[1], "+30", 1)
+            if sum + 30 <= 98:
+                self.increase_button = Button(BUTTON_POS_2[0], BUTTON_POS_2[1], "+30", 1)
             self.decrease_button = Button(BUTTON_POS_3[0], BUTTON_POS_3[1], "-30", 1)
 
         if self.play_card.power == "K":
@@ -131,6 +133,9 @@ class Player(Node):
     def del_button_K(self):
         self.kill_buttons = []
 
-    def die(self):
-        pass
+    def die(self, sum):
+        for card in self.cards:
+            if sum + card.point > 98:
+                return True
+        return False
         

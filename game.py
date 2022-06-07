@@ -22,7 +22,7 @@ class Game:
         self.play_card = card
         self.play_cards.append(card)
         self.cur_player.play_card = card  
-        self.cur_player.check_play_card()
+        self.cur_player.check_play_card(self.sum)
         self.sum += (card.point)
         card.effect(self)  
 
