@@ -19,12 +19,12 @@ for card_type in CARD_TYPES:
         card_images.append(card_image)
     CARDS[card_type] = card_images
 
-
-
 class Card:
-    def __init__(self, type, num):
+    def __init__(self, type, num, point):
         self.type = type
         self.num = num
+        self.point = point
+        self.power = None
         self.image = CARDS[type][num]
         self.rect = self.image.get_rect()
         self.back_image = CARD_BACK
@@ -39,25 +39,47 @@ class Card:
         image = pygame.transform.scale(self.image, (300, 300))
         win.blit(image, (x, y))
 
-class Card_4(Card):
-    def __init__(self, type, num):
-        super().__init__(type, num)
-
-    def block():
+    def effect(self, game):
         pass
 
-class Card_A(Card):
-    def __init__(self, type, num):
-        super().__init__(type, num)
+class Card_4(Card):
+    def __init__(self, type, num, point):
+        super().__init__(type, num, point)
+        self.power = "4"
+
+    def effect(self, game):
+        pass
+
+class Card_A_Heart(Card):
+    def __init__(self, type, num, point):
+        super().__init__(type, num, point)
+
+    def effect(self, game):
+        game.sum = 98
+
+class Card_A_Spades(Card):
+    def __init__(self, type, num, point):
+        super().__init__(type, num, point)
+
+    def effect(self, game):
+        game.sum = 0
 
 class Card_J(Card):
-    def __init__(self, type, num):
-        super().__init__(type, num)
+    def __init__(self, type, num, point):
+        super().__init__(type, num, point)
 
 class Card_Q(Card):
-    def __init__(self, type, num):
-        super().__init__(type, num)
+    def __init__(self, type, num, point):
+        super().__init__(type, num, point)
+        self.power = "Q"
+    
+    def effect(self, game):
+        pass
 
 class Card_K(Card):
-    def __init__(self, x, y, type, num):
-        super().__init__(x, y, type, num)
+    def __init__(self, type, num, point):
+        super().__init__(type, num, point)
+        self.power = "K"
+
+    def effect(self, game):
+        pass
