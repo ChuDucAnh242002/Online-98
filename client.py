@@ -31,6 +31,7 @@ bg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'Background
 # Size and pos
 BUTTON_POS = (375, 312)
 DECK_POS_X, DECK_POS_Y = 300, 200
+CARD_POS = (500, 200)
 PLAYER_POS_0_X, PLAYER_POS_0_Y = 300, 550
 PLAYER_POS_1_X, PLAYER_POS_1_Y = 0, 300
 PLAYER_POS_2_X, PLAYER_POS_2_Y = 300, 10
@@ -79,6 +80,9 @@ def draw_win(game, players, deck, cur_player):
     
     if game.ready == True:
         deck.draw(WIN)
+        play_card = game.get_play_card()
+        if play_card != None:
+            play_card.draw_play(WIN, CARD_POS[0], CARD_POS[1])
 
 def init_player():
     """
@@ -98,6 +102,22 @@ def init_player():
         players.append(player)
     return players
 
+def handle_click(game, cur_player, pos):
+    if cur_player.rect1 == None or cur_player.rect2 == None:
+        return 
+    if cur_player.click1(pos):
+        card = cur_player.get_card(0)
+        game.play_card = card
+        cur_player.remove_card(card)
+        return 
+
+    elif cur_player.click2(pos):
+        card = cur_player.get_card(1)
+        game.play_card = card
+        cur_player.remove_card(card)
+        return 
+
+
 def main():
 
     players = init_player()
@@ -109,6 +129,7 @@ def main():
     start_button = Button(BUTTON_POS[0], BUTTON_POS[1], "Start game")
 
     run = True
+    card = None
 
     while run:
         CLOCK.tick(FPS)
@@ -129,6 +150,8 @@ def main():
                         game.ready = True
                         game.play()
                         start_button = None
+
+                handle_click(game, cur_player, pos)
 
         pygame.display.update()
 

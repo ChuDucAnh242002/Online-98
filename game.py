@@ -6,6 +6,7 @@ class Game:
         self.players = players
         self.deck = deck
         self.ready = False
+        self.play_card = None
 
     def play(self):
         if self.ready == True:
@@ -14,9 +15,12 @@ class Game:
             # Each player have 2 cards
             for player in self.players:
                 for _ in range(2):
-                    last_card = self.deck.cards[-1]
-                    player.cards.append(last_card)
-                    self.deck.cards.pop()
+                    last_card = self.deck.get_lastcard()
+                    player.add_card(last_card)
+                    self.deck.remove_card()
+
+    def get_play_card(self):
+        return self.play_card
 
     def cal_result(self):
         pass

@@ -28,7 +28,7 @@ class Deck:
         win.blit(self.image, (self.x, self.y))
 
     def remove_card(self):
-        pass
+        self.cards.pop()
 
     def remove_deck(self):
         pass
@@ -41,3 +41,6 @@ class Deck:
 
     def reset_in_match(self):
         pass
+
+    def get_lastcard(self):
+        return self.cards[-1]

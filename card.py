@@ -35,6 +35,10 @@ class Card:
             return
         win.blit(self.image, (x, y))
 
+    def draw_play(self, win, x, y):
+        image = pygame.transform.scale(self.image, (300, 300))
+        win.blit(image, (x, y))
+
 class Card_4(Card):
     def __init__(self, type, num):
         super().__init__(type, num)
