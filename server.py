@@ -7,7 +7,7 @@ from game import Game
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server = "172.104.158.232"
+server = "192.168.0.245"
 port = 5555
 
 try:
