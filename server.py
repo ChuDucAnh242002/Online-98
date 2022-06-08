@@ -7,7 +7,7 @@ from game import Game
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server = "192.168.0.245"
+server = "172.104.158.232"
 port = 5555
 
 try:
@@ -21,12 +21,12 @@ print("Waiting for a connection")
 
 connections = 0
 idCount = 0
-p = -1
+player_num = -1
 games = {}
 MAX_PER_ROOM = 6
 
 def threaded_client(conn, p, gameId):
-    global idCount
+    global idCount, player_num, games
     conn.send(str.encode(str(p)))
 
     reply = ""
@@ -123,43 +123,52 @@ def threaded_client(conn, p, gameId):
             break
     print("Lost connection")
     try:
-        if len(game.players) == 1:
+        if len(game.players) == 0:
             del games[gameId]
             print("Closing game", gameId)
     except:
         pass
     
     idCount -= 1
-    p -= 1
+    player_num -= 1
     game.delete_player(p)
     conn.close()
 
 def main():
-    global connections, idCount, p
+    global connections, idCount, player_num
     while True:
         if connections < 18:
             connections += 1
             conn, addr = s.accept()
             print("Connected to: ", addr)
 
+
             idCount += 1
-            p += 1
-            gameId = p //MAX_PER_ROOM
+            player_num += 1
+            p = player_num %MAX_PER_ROOM
+            gameId = player_num //MAX_PER_ROOM
+
+            if len(games) != 0:
+                if games[gameId].ready:
+                    player_num = player_num +MAX_PER_ROOM -p
+                    idCount = idCount +MAX_PER_ROOM -p
+                    p = player_num %MAX_PER_ROOM
+                    gameId = player_num //MAX_PER_ROOM
 
             if idCount %MAX_PER_ROOM == 1:
                 games[gameId] = Game(gameId)
-                player = Player(p %MAX_PER_ROOM)
+                player = Player(p)
                 games[gameId].players.append(player)
                 print("Creating a new game...")
 
-            else:
+            elif not games[gameId].ready:
                 player = Player(p %MAX_PER_ROOM)
-                parent = games[gameId].players[(p -1) %MAX_PER_ROOM]
+                parent = games[gameId].players[(p -1)]
                 parent.child = player
                 player.parent = parent
                 games[gameId].players.append(player)
 
-            start_new_thread(threaded_client, (conn, p %MAX_PER_ROOM, gameId))
+            start_new_thread(threaded_client, (conn, p, gameId))
             
             
 if __name__ == "__main__":
