@@ -11,6 +11,7 @@ from button import Button
 FONT = pygame.font.SysFont('comicsans', 24)
 
 BLACK = (0, 0, 0)
+RED = (255, 0,0)
 
 # Size and pos
 BUTTON_POS = (375, 312)
@@ -37,6 +38,7 @@ class Player(Node):
         self.increase_button = None
         self.decrease_button = None
         self.kill_buttons = []
+        self.killed = False
         self.play_card = None
         self.locked = False
         self.turn = False
@@ -50,6 +52,10 @@ class Player(Node):
             back = False
         for num, card in enumerate(self.cards):
             card.draw(win, x + 90 + 110*num, y, back)
+        if self.killed :
+            killed_text = "Kill"
+            killed_text = FONT.render(killed_text, 1, RED)
+            win.blit(killed_text, (x, y+ 50))
 
     def add_card(self, card):
         self.cards.append(card)
@@ -131,10 +137,16 @@ class Player(Node):
         self.kill_buttons = []
 
     def check_die(self, sum):
-        for card in self.cards:
-            if sum + card.point > 98:
-                return True
+        if self.cards != []:
+            for card in self.cards:
+                if sum + card.point <= 98 :
+                    return False
+            return True
         return False
+    
+    def die(self):
+        self.cards = []
+        self.locked = True
 
     def reset(self):
         self.cards = []

@@ -83,7 +83,7 @@ def draw_sum(game):
     WIN.blit(sum_text, (0, 0))
 
 def draw_win(game, players, deck, cur_player):
-    global start_button, kill_buttons
+    global start_button
     draw_bg()
     draw_players(cur_player)
     
@@ -98,7 +98,7 @@ def draw_win(game, players, deck, cur_player):
         if play_card == None:
             return
         play_card.draw_play(WIN)
-        if play_card.power == "Q" :
+        if play_card.get_power() == "Q" :
             increase_button = cur_player.get_increase_button()
             decrease_button = cur_player.get_decrease_button()
             if increase_button != None:
@@ -106,27 +106,26 @@ def draw_win(game, players, deck, cur_player):
             if decrease_button != None:
                 decrease_button.draw(WIN, middle = False)
             
-        if play_card.power == "K":
+        if play_card.get_power() == "K":
             kill_buttons = cur_player.get_kill_buttons()
             for kill_button in kill_buttons:
                 kill_button[1].draw(WIN, middle = False)
 
 def handle_click(cur_player, pos):
     global n
+    
     if cur_player.click1(pos):
         n.send("click1")
-        return 
+        n.send("end turn")
+        return
 
     elif cur_player.click2(pos):
         n.send("click2")
-        return 
-
-    # power = cur_player.play_card.power
-    # if power != "Q" or power != "K":
-        # n.send("end turn")
+        n.send("end turn")
+        return
 
 def main():
-    global n, start_button, kill_buttons
+    global n, start_button
     p = int(n.getP())
 
     start_button = None
@@ -169,16 +168,22 @@ def main():
                         n.send("start")
                         start_button = None
 
-                if not cur_player.check_die(game.sum) and cur_player.turn:
+                if cur_player.check_die(game.sum):
+                    print("die")
+                    n.send("die")
+
+                if not cur_player.check_die(game.sum) and (increase_button != None or decrease_button != None or kill_buttons != None):
+
+                    if not cur_player.locked and cur_player.turn:
+                        handle_click(cur_player, pos)
+
                     if increase_button != None:
                         if increase_button.click(pos):
                             n.send("increase")
-                            # n.send("end turn")
                     
                     if decrease_button != None:
                         if decrease_button.click(pos):
                             n.send("decrease")
-                            # n.send("end turn")
 
                     if kill_buttons != []:
                         for kill_button in kill_buttons:
@@ -186,11 +191,6 @@ def main():
                                 datas = ["kill", str(kill_button[0])]
                                 data = " ".join(datas)
                                 n.send(data)
-                                # n.send("end turn")
-                    
-                    if not cur_player.locked:
-                        handle_click(cur_player, pos)
-
                     
         if deck.empty():
             n.send("reset in match")

@@ -53,6 +53,7 @@ def threaded_client(conn, p, gameId):
                     datas = data.split(" ")
                     if data == "reset":
                         game.reset()
+
                     if data == "start":
                         game.ready = True
                         game.play()
@@ -97,7 +98,18 @@ def threaded_client(conn, p, gameId):
                         cur_player.del_button_K()
 
                     if data == "end turn":
-                        game.end_turn()
+                        game.end_turn(cur_player)
+                        if cur_player.killed:
+                            if game.play_card.point == 4:
+                                cur_player.killed = False
+                            else:
+                                cur_player.die()
+                        if game.sum > 98:
+                            cur_player.die()
+                            game.sum = game.sum - game.play_card.point
+
+                    if data == "die":
+                        cur_player.die()
                         
                     reply = game
                     conn.sendall(pickle.dumps(reply))
@@ -120,16 +132,15 @@ def threaded_client(conn, p, gameId):
 
 def main():
     global connections, idCount
-    if connections < 8:
-        connections += 1
-        while True:
+    while True:
+        if connections < 6:
+            connections += 1
             conn, addr = s.accept()
             print("Connected to: ", addr)
 
             idCount += 1
             p = (idCount - 1) %6
             gameId = (p) //6
-            print(gameId)
 
             if idCount %6 == 1:
                 games[gameId] = Game(gameId)

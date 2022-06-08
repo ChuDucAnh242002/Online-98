@@ -41,10 +41,18 @@ class Game:
 
     def kill_K(self, id):
         player = self.players[id]
+        self.cur_player.turn = False
+        player.turn = True
+        player.killed = True
+        kill = True
         for card in player.cards:
+            if card.get_power() == "4":
+                kill = False
             self.play_cards.append(card)
-        player.cards = []
-        player.locked = True
+
+        if kill:
+            player.die()
+            self.end_turn(player)
 
     def delete_player(self, id):
         for p in self.players:
@@ -61,21 +69,27 @@ class Game:
                     parent.child = None
                 self.players.remove(player)
 
-    def end_turn(self):
-        self.cur_player.turn = False
+    def end_turn(self, cur_node):
+        cur_node.turn = False
         next_turn_id = -1
-        if self.cur_player.child == None:
-            # Find the most parent and change that next turn
-            temp_player = self.cur_player
-            while temp_player != None:
+        if cur_node.child == None :
+            # Find the most parent and change that next turn if there is not next player
+            temp_player = cur_node
+            while temp_player.parent != None:
                 temp_player = temp_player.parent
             next_turn_id = temp_player.id
         else:
-            next_turn_id = self.cur_player.child.id
-        
+            next_turn_id = cur_node.child.id
+    
+        # Change the player turn
         if next_turn_id != -1:
-            pass
-
+            for player in self.players:
+                if player.id == next_turn_id :
+                    if not player.killed:
+                        player.turn = True
+                    else:
+                        self.end_turn(player)
+                        
     def cal_result(self):
         pass
 

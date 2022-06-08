@@ -25,7 +25,7 @@ class Card:
         self.type = type
         self.num = num
         self.point = point
-        self.power = None
+        self.power = "0"
 
     def draw(self, win, x, y, back = False):
         if back:
@@ -36,6 +36,9 @@ class Card:
     def draw_play(self, win):
         image = pygame.transform.scale(CARDS[self.type][self.num], (300, 300))
         win.blit(image, (CARD_POS[0], CARD_POS[1]))
+
+    def get_power(self):
+        return self.power
 
     def effect(self, game):
         pass
