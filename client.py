@@ -121,6 +121,10 @@ def handle_click(cur_player, pos):
         n.send("click2")
         return 
 
+    # power = cur_player.play_card.power
+    # if power != "Q" or power != "K":
+        # n.send("end turn")
+
 def main():
     global n, start_button, kill_buttons
     p = int(n.getP())
@@ -165,14 +169,16 @@ def main():
                         n.send("start")
                         start_button = None
 
-                if not cur_player.check_die(game.sum):
+                if not cur_player.check_die(game.sum) and cur_player.turn:
                     if increase_button != None:
                         if increase_button.click(pos):
                             n.send("increase")
+                            # n.send("end turn")
                     
                     if decrease_button != None:
                         if decrease_button.click(pos):
                             n.send("decrease")
+                            # n.send("end turn")
 
                     if kill_buttons != []:
                         for kill_button in kill_buttons:
@@ -180,10 +186,12 @@ def main():
                                 datas = ["kill", str(kill_button[0])]
                                 data = " ".join(datas)
                                 n.send(data)
-                        
+                                # n.send("end turn")
+                    
                     if not cur_player.locked:
                         handle_click(cur_player, pos)
 
+                    
         if deck.empty():
             n.send("reset in match")
 

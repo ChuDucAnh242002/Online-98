@@ -54,9 +54,9 @@ def threaded_client(conn, p, gameId):
                     if data == "reset":
                         game.reset()
                     if data == "start":
-                        print(data)
                         game.ready = True
                         game.play()
+                        cur_player.turn = True
 
                     if data == "click1":
                         card = cur_player.get_card(0)
@@ -96,6 +96,9 @@ def threaded_client(conn, p, gameId):
                         cur_player.locked = False
                         cur_player.del_button_K()
 
+                    if data == "end turn":
+                        game.end_turn()
+                        
                     reply = game
                     conn.sendall(pickle.dumps(reply))
             else:

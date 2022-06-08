@@ -39,6 +39,7 @@ class Player(Node):
         self.kill_buttons = []
         self.play_card = None
         self.locked = False
+        self.turn = False
 
     def draw(self, win, x, y, cur = False):
         text = f"Player {self.id}"

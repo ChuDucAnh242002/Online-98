@@ -61,6 +61,21 @@ class Game:
                     parent.child = None
                 self.players.remove(player)
 
+    def end_turn(self):
+        self.cur_player.turn = False
+        next_turn_id = -1
+        if self.cur_player.child == None:
+            # Find the most parent and change that next turn
+            temp_player = self.cur_player
+            while temp_player != None:
+                temp_player = temp_player.parent
+            next_turn_id = temp_player.id
+        else:
+            next_turn_id = self.cur_player.child.id
+        
+        if next_turn_id != -1:
+            pass
+
     def cal_result(self):
         pass
 
