@@ -82,8 +82,8 @@ def draw_sum(game):
     sum_text = SUM_FONT.render(sum_text, 1, BLUE)
     WIN.blit(sum_text, (0, 0))
 
-def draw_win(game, players, deck, cur_player, increase_button, decrease_button):
-    global n, start_button, kill_buttons
+def draw_win(game, players, deck, cur_player):
+    global start_button, kill_buttons
     draw_bg()
     draw_players(cur_player)
     
@@ -99,19 +99,17 @@ def draw_win(game, players, deck, cur_player, increase_button, decrease_button):
             return
         play_card.draw_play(WIN)
         if play_card.power == "Q" :
-            # if game.sum + 30 <= 98:
-            #     increase_button = cur_player.get_increase_button()
-            # decrease_button = cur_player.get_decrease_button()
+            increase_button = cur_player.get_increase_button()
+            decrease_button = cur_player.get_decrease_button()
             if increase_button != None:
                 increase_button.draw(WIN, middle = False)
             if decrease_button != None:
                 decrease_button.draw(WIN, middle = False)
             
-    #     if play_card.power == "K":
-    #         kill_buttons = cur_player.get_kill_buttons()
-    #         for kill_button in kill_buttons:
-    #             kill_button[1].draw(WIN, middle = False)
-    #         cur_player.locked = True
+        if play_card.power == "K":
+            kill_buttons = cur_player.get_kill_buttons()
+            for kill_button in kill_buttons:
+                kill_button[1].draw(WIN, middle = False)
 
 def handle_click(cur_player, pos):
     global n
@@ -124,13 +122,10 @@ def handle_click(cur_player, pos):
         return 
 
 def main():
-    global n, start_button, increase_button, decrease_button, kill_buttons
+    global n, start_button, kill_buttons
     p = int(n.getP())
 
     start_button = None
-    increase_button = None
-    decrease_button = None
-    kill_buttons = []
 
     run = True
 
@@ -148,8 +143,16 @@ def main():
             print("Couldn't get game")
             break
         
-        
+        increase_button = cur_player.get_increase_button()
+        decrease_button = cur_player.get_decrease_button()
+        kill_buttons = cur_player.get_kill_buttons()
 
+        if increase_button != None or decrease_button != None:
+            n.send("locked")
+
+        if kill_buttons != []:
+            n.send("locked")
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -162,53 +165,29 @@ def main():
                         n.send("start")
                         start_button = None
 
-                if not cur_player.die(game.sum):
-                    if game.sum + 30 <= 98:
-                        if increase_button != None:
-                            if increase_button.click(pos):
-                                n.send("increase")
-                                increase_button = None
-                                decrease_button = None
-                                # cur_player.del_button_Q()
-                                # game.play_card.power = None
-                                # cur_player.locked = False
+                if not cur_player.check_die(game.sum):
+                    if increase_button != None:
+                        if increase_button.click(pos):
+                            n.send("increase")
                     
                     if decrease_button != None:
                         if decrease_button.click(pos):
                             n.send("decrease")
-            #                 game.decrease_Q()
-            #                 cur_player.del_button_Q()
-                            increase_button = None
-                            decrease_button = None
-            #                 game.play_card.power = None
-            #                 cur_player.locked = False
 
-            #         if kill_buttons != []:
-            #             for kill_button in kill_buttons:
-            #                 if kill_button[1].click(pos):
-            #                     game.kill_K(kill_button[0])
-            #                     game.play_card.power = None
-            #                     cur_player.locked = False
-            #                     kill_buttons = []
-            #                     cur_player.del_button_K()
+                    if kill_buttons != []:
+                        for kill_button in kill_buttons:
+                            if kill_button[1].click(pos):
+                                datas = ["kill", str(kill_button[0])]
+                                data = " ".join(datas)
+                                n.send(data)
                         
                     if not cur_player.locked:
                         handle_click(cur_player, pos)
 
         if deck.empty():
             n.send("reset in match")
-            # deck.reset_in_match(game.play_cards)
-            # game.play_cards = []
 
-        play_card = game.get_play_card()
-        if play_card != None:
-            if play_card.power == "Q":
-                if game.sum + 30 <= 98:
-                    increase_button = cur_player.get_increase_button()
-                decrease_button = cur_player.get_decrease_button()
-                n.send("locked")
-
-        draw_win(game, players, deck, cur_player, increase_button, decrease_button)
+        draw_win(game, players, deck, cur_player)
 
         pygame.display.update()
 

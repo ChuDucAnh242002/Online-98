@@ -40,6 +40,13 @@ class Game:
             self.sum = 0
 
     def kill_K(self, id):
+        player = self.players[id]
+        for card in player.cards:
+            self.play_cards.append(card)
+        player.cards = []
+        player.locked = True
+
+    def delete_player(self, id):
         for p in self.players:
             if p.id == id:
                 player = p
@@ -61,7 +68,16 @@ class Game:
         pass
 
     def reset(self):
-        self.ready = False
+        self.ready = True
         self.play_card = None
         self.play_cards = []
         self.sum = 0
+
+        for player in self.players:
+            player.reset()
+        
+        self.deck.shuffle()
+
+        for player in self.players:
+            for _ in range(2):
+                self.deck.deal(player)

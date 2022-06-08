@@ -84,8 +84,9 @@ class Player(Node):
                 self.increase_button = Button(BUTTON_POS_2[0], BUTTON_POS_2[1], "+30", 1)
             self.decrease_button = Button(BUTTON_POS_3[0], BUTTON_POS_3[1], "-30", 1)
 
-        # if self.play_card.power == "K":
-        #     self.init_k_child(self.child, self.id)
+        if self.play_card.power == "K":
+            self.init_k_child(self.child, self.id)
+            self.init_k_parent(self.parent, self.id)
 
     def init_k_child(self, child_node, p):
         if child_node == None:
@@ -128,9 +129,17 @@ class Player(Node):
     def del_button_K(self):
         self.kill_buttons = []
 
-    def die(self, sum):
+    def check_die(self, sum):
         for card in self.cards:
             if sum + card.point > 98:
                 return True
         return False
+
+    def reset(self):
+        self.cards = []
+        self.increase_button = None
+        self.decrease_button = None
+        self.kill_buttons = []
+        self.play_card = None
+        self.locked = False
         

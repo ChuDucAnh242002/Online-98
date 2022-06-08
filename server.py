@@ -81,13 +81,21 @@ def threaded_client(conn, p, gameId):
                         game.increase_Q()
                         game.play_card.power = None
                         cur_player.locked = False
-                        # cur_player.del_button_Q()
+                        cur_player.del_button_Q()
 
                     if data == "decrease":
                         game.decrease_Q()
                         game.play_card.power = None
                         cur_player.locked = False
-                        # cur_player.del_button_Q()
+                        cur_player.del_button_Q()
+
+                    if datas[0] == "kill":
+                        id = datas[1]
+                        game.kill_K(int(id))
+                        game.play_card.power = None
+                        cur_player.locked = False
+                        cur_player.del_button_K()
+
                     reply = game
                     conn.sendall(pickle.dumps(reply))
             else:
@@ -104,20 +112,21 @@ def threaded_client(conn, p, gameId):
         pass
     
     idCount -= 1
-    game.kill_K(p)
+    game.delete_player(p)
     conn.close()
 
 def main():
     global connections, idCount
-    if connections < 6:
+    if connections < 8:
         connections += 1
         while True:
             conn, addr = s.accept()
             print("Connected to: ", addr)
 
             idCount += 1
-            p = idCount - 1
+            p = (idCount - 1) %6
             gameId = (p) //6
+            print(gameId)
 
             if idCount %6 == 1:
                 games[gameId] = Game(gameId)
