@@ -35,6 +35,7 @@ class Player(Node):
         self.cards = []
         self.rect1 = pygame.Rect(390, 550, CARD_WIDTH, CARD_HEIGHT)
         self.rect2 = pygame.Rect(500, 550, CARD_WIDTH, CARD_HEIGHT)
+        self.start_button = self.init_start_button()
         self.increase_button = None
         self.decrease_button = None
         self.kill_buttons = []
@@ -42,6 +43,12 @@ class Player(Node):
         self.play_card = None
         self.locked = False
         self.turn = False
+
+    def init_start_button(self):
+        start_button = None
+        if self.id == 0:
+            start_button = Button(BUTTON_POS[0], BUTTON_POS[1], "Start game", 0)
+        return start_button
 
     def draw(self, win, x, y, cur = False):
         text = f"Player {self.id}"
@@ -75,6 +82,9 @@ class Player(Node):
 
     def get_card(self, num):
         return self.cards[num]
+
+    def get_start_button(self):
+        return self.start_button
 
     def get_increase_button(self):
         return self.increase_button
@@ -129,6 +139,9 @@ class Player(Node):
             kill_button = Button(BUTTON_POS_K_5[0], BUTTON_POS_K_5[1], "", 2)
             self.kill_buttons.append((cur_node.id, kill_button))
 
+    def del_button_start(self):
+        self.start_button = None
+
     def del_button_Q(self):
         self.increase_button = None
         self.decrease_button = None
@@ -150,9 +163,12 @@ class Player(Node):
 
     def reset(self):
         self.cards = []
+        self.start_button = self.init_start_button()
         self.increase_button = None
         self.decrease_button = None
         self.kill_buttons = []
+        self.killed = False
         self.play_card = None
         self.locked = False
+        self.turn = False
         

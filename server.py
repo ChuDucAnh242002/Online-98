@@ -1,7 +1,6 @@
 import socket
 from _thread import *
 import pickle
-import pygame
 
 from player import Player
 from game import Game
@@ -22,7 +21,9 @@ print("Waiting for a connection")
 
 connections = 0
 idCount = 0
+p = -1
 games = {}
+MAX_PER_ROOM = 6
 
 def threaded_client(conn, p, gameId):
     global idCount
@@ -37,7 +38,7 @@ def threaded_client(conn, p, gameId):
                 game = games[gameId]
 
                 players = game.players
-                cur_player = players[p]
+                cur_player = None
                 for player in players:
                     if player.id == p:
                         cur_player = player
@@ -45,6 +46,7 @@ def threaded_client(conn, p, gameId):
                 
                 deck = game.deck
                 game.cur_player = cur_player
+
                 if not data:
                     print("No data")
                     break
@@ -58,6 +60,7 @@ def threaded_client(conn, p, gameId):
                         game.ready = True
                         game.play()
                         cur_player.turn = True
+                        cur_player.del_button_start()
 
                     if data == "click1":
                         card = cur_player.get_card(0)
@@ -120,42 +123,43 @@ def threaded_client(conn, p, gameId):
             break
     print("Lost connection")
     try:
-        if p == 0:
+        if len(game.players) == 1:
             del games[gameId]
             print("Closing game", gameId)
     except:
         pass
     
     idCount -= 1
+    p -= 1
     game.delete_player(p)
     conn.close()
 
 def main():
-    global connections, idCount
+    global connections, idCount, p
     while True:
-        if connections < 6:
+        if connections < 18:
             connections += 1
             conn, addr = s.accept()
             print("Connected to: ", addr)
 
             idCount += 1
-            p = (idCount - 1) %6
-            gameId = (p) //6
+            p += 1
+            gameId = p //MAX_PER_ROOM
 
-            if idCount %6 == 1:
+            if idCount %MAX_PER_ROOM == 1:
                 games[gameId] = Game(gameId)
-                player = Player(p)
+                player = Player(p %MAX_PER_ROOM)
                 games[gameId].players.append(player)
                 print("Creating a new game...")
 
             else:
-                player = Player(p)
-                parent = games[gameId].players[p -1]
+                player = Player(p %MAX_PER_ROOM)
+                parent = games[gameId].players[(p -1) %MAX_PER_ROOM]
                 parent.child = player
                 player.parent = parent
                 games[gameId].players.append(player)
 
-            start_new_thread(threaded_client, (conn, p, gameId))
+            start_new_thread(threaded_client, (conn, p %MAX_PER_ROOM, gameId))
             
             
 if __name__ == "__main__":

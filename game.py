@@ -10,6 +10,7 @@ class Game:
         self.play_cards = []
         self.cur_player = None
         self.sum = 0
+        self.winner = None
 
     def play(self):
         if self.ready == True:
@@ -40,19 +41,23 @@ class Game:
             self.sum = 0
 
     def kill_K(self, id):
-        player = self.players[id]
-        self.cur_player.turn = False
-        player.turn = True
-        player.killed = True
-        kill = True
-        for card in player.cards:
-            if card.get_power() == "4":
-                kill = False
-            self.play_cards.append(card)
+        player = None
+        for p in self.players:
+            if p.id == id:
+                player = p
+        if player != None:
+            self.cur_player.turn = False
+            player.turn = True
+            player.killed = True
+            kill = True
+            for card in player.cards:
+                if card.get_power() == "4":
+                    kill = False
+                self.play_cards.append(card)
 
-        if kill:
-            player.die()
-            self.end_turn(player)
+            if kill:
+                player.die()
+                self.end_turn(player)
 
     def delete_player(self, id):
         for p in self.players:
@@ -67,6 +72,8 @@ class Game:
                     child.parent = None
                 elif player.child == None and player.parent != None:
                     parent.child = None
+
+                self.end_turn(player)
                 self.players.remove(player)
 
     def end_turn(self, cur_node):
@@ -90,23 +97,26 @@ class Game:
                     else:
                         self.end_turn(player)
                         
-    def cal_result(self):
-        pass
-
     def end_game(self):
-        pass
+        count = 0
+        temp_player = None
+        for player in self.players:
+            if len(player.cards) == 0:
+                count += 1
+            else:
+                temp_player = player
+        if count == len(self.players) - 1:
+            self.winner = temp_player
+            return True
+        return False
 
     def reset(self):
-        self.ready = True
+        self.deck = Deck()
+        self.ready = False
         self.play_card = None
         self.play_cards = []
         self.sum = 0
+        self.winner = None
 
         for player in self.players:
             player.reset()
-        
-        self.deck.shuffle()
-
-        for player in self.players:
-            for _ in range(2):
-                self.deck.deal(player)

@@ -48,9 +48,6 @@ class Card_4(Card):
         super().__init__(type, num, point)
         self.power = "4"
 
-    def effect(self, game):
-        pass
-
 class Card_A_Heart(Card):
     def __init__(self, type, num, point):
         super().__init__(type, num, point)
@@ -76,14 +73,8 @@ class Card_Q(Card):
     def __init__(self, type, num, point):
         super().__init__(type, num, point)
         self.power = "Q"
-    
-    def effect(self, game):
-        pass
 
 class Card_K(Card):
     def __init__(self, type, num, point):
         super().__init__(type, num, point)
         self.power = "K"
-
-    def effect(self, game):
-        pass

@@ -9,10 +9,7 @@ import sys
 import os
 
 from button import BLUE, Button
-from game import Game
 from network import Network
-from player import Player
-from deck import Deck
 
 pygame.init()
 pygame.font.init()
@@ -26,16 +23,13 @@ FPS = 60
 
 # Font
 SUM_FONT = pygame.font.SysFont('comicsans', 36)
+WINNER_FONT = pygame.font.SysFont('comicsans', 100)
 
 # Image
 bg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'Background', 'background.jpg')), (WIDTH, HEIGHT))
 
 # Size and pos
 BUTTON_POS = (375, 312)
-BUTTON_POS_2 = (100, 600)
-BUTTON_POS_3 = (180, 600)
-
-# CARD_POS = (500, 200)
 PLAYER_POS_0_X, PLAYER_POS_0_Y = 300, 550
 PLAYER_POS_1_X, PLAYER_POS_1_Y = 0, 300
 PLAYER_POS_2_X, PLAYER_POS_2_Y = 300, 10
@@ -82,13 +76,12 @@ def draw_sum(game):
     sum_text = SUM_FONT.render(sum_text, 1, BLUE)
     WIN.blit(sum_text, (0, 0))
 
-def draw_win(game, players, deck, cur_player):
-    global start_button
+def draw_win(game, deck, cur_player):
     draw_bg()
     draw_players(cur_player)
     
-    if game.ready == False and cur_player.id == 0:
-        start_button = Button(BUTTON_POS[0], BUTTON_POS[1], "Start game", 0)
+    start_button = cur_player.get_start_button()
+    if start_button != None:
         start_button.draw(WIN)
 
     elif game.ready == True:
@@ -124,11 +117,14 @@ def handle_click(cur_player, pos):
         n.send("end turn")
         return
 
-def main():
-    global n, start_button
-    p = int(n.getP())
+def draw_winner(winner):
+    winner_text = "Winner: " + str(winner.id)
+    winner_text = WINNER_FONT.render(winner_text, 1, BLUE)
+    WIN.blit(winner_text, (WIDTH //2 - winner_text.get_width() /2, HEIGHT //2 - winner_text.get_height() /2))
 
-    start_button = None
+def main():
+    global n
+    p = int(n.getP())
 
     run = True
 
@@ -137,7 +133,6 @@ def main():
 
         try: 
             game = n.send("get")
-            players = game.players
             cur_player = game.cur_player
             deck = game.deck
 
@@ -146,6 +141,7 @@ def main():
             print("Couldn't get game")
             break
         
+        start_button = cur_player.get_start_button()
         increase_button = cur_player.get_increase_button()
         decrease_button = cur_player.get_decrease_button()
         kill_buttons = cur_player.get_kill_buttons()
@@ -166,10 +162,8 @@ def main():
                 if start_button != None:
                     if start_button.click(pos):
                         n.send("start")
-                        start_button = None
 
                 if cur_player.check_die(game.sum):
-                    print("die")
                     n.send("die")
 
                 if not cur_player.check_die(game.sum) and (increase_button != None or decrease_button != None or kill_buttons != None):
@@ -195,7 +189,13 @@ def main():
         if deck.empty():
             n.send("reset in match")
 
-        draw_win(game, players, deck, cur_player)
+        if game.end_game() and len(game.players) > 1:
+            draw_winner(game.winner)
+            pygame.display.update()
+            pygame.time.delay(5000)
+            n.send("reset")
+
+        draw_win(game, deck, cur_player)
 
         pygame.display.update()
 
