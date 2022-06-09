@@ -2,7 +2,7 @@ import socket
 from _thread import *
 import pickle
 
-from player import Player
+# from player import Player
 from game import Game
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -103,7 +103,7 @@ def threaded_client(conn, p, gameId):
                     if data == "end turn":
                         game.end_turn(cur_player)
                         if cur_player.killed:
-                            if game.play_card.point == 4:
+                            if game.play_card.get_power() == "4" or game.play_card.get_power() == "K":
                                 cur_player.killed = False
                             else:
                                 cur_player.die()
@@ -113,6 +113,7 @@ def threaded_client(conn, p, gameId):
 
                     if data == "die":
                         cur_player.die()
+                        game.end_turn(cur_player)
                         
                     reply = game
                     conn.sendall(pickle.dumps(reply))
@@ -142,7 +143,6 @@ def main():
             conn, addr = s.accept()
             print("Connected to: ", addr)
 
-
             idCount += 1
             player_num += 1
             p = player_num %MAX_PER_ROOM
@@ -157,20 +157,14 @@ def main():
 
             if idCount %MAX_PER_ROOM == 1:
                 games[gameId] = Game(gameId)
-                player = Player(p)
-                games[gameId].players.append(player)
+                games[gameId].add_player(p)
                 print("Creating a new game...")
 
             elif not games[gameId].ready:
-                player = Player(p %MAX_PER_ROOM)
-                parent = games[gameId].players[(p -1)]
-                parent.child = player
-                player.parent = parent
-                games[gameId].players.append(player)
+                games[gameId].add_player(p)
 
             start_new_thread(threaded_client, (conn, p, gameId))
-            
-            
+                 
 if __name__ == "__main__":
     main()
 

@@ -21,11 +21,11 @@ for card_type in CARD_TYPES:
     CARDS[card_type] = card_images
 
 class Card:
-    def __init__(self, type, num, point):
+    def __init__(self, type, num, point, power = "0"):
         self.type = type
         self.num = num
         self.point = point
-        self.power = "0"
+        self.power = power
 
     def draw(self, win, x, y, back = False):
         if back:
@@ -44,37 +44,37 @@ class Card:
         pass
 
 class Card_4(Card):
-    def __init__(self, type, num, point):
-        super().__init__(type, num, point)
-        self.power = "4"
+    def __init__(self, type, num, point, power):
+        super().__init__(type, num, point, power)
+        # self.power = "4"
 
 class Card_A_Heart(Card):
-    def __init__(self, type, num, point):
-        super().__init__(type, num, point)
-        self.power = "A_H"
+    def __init__(self, type, num, point, power):
+        super().__init__(type, num, point, power)
+        # self.power = "A_H"
 
     def effect(self, game):
         game.sum = 98
 
 class Card_A_Spades(Card):
-    def __init__(self, type, num, point):
-        super().__init__(type, num, point)
-        self.power = "A_S"
+    def __init__(self, type, num, point, power):
+        super().__init__(type, num, point, power)
+        # self.power = "A_S"
 
     def effect(self, game):
         game.sum = 0
 
 class Card_J(Card):
-    def __init__(self, type, num, point):
-        super().__init__(type, num, point)
-        self.power = "J"
+    def __init__(self, type, num, point, power):
+        super().__init__(type, num, point, power)
+        # self.power = "J"
 
 class Card_Q(Card):
-    def __init__(self, type, num, point):
-        super().__init__(type, num, point)
-        self.power = "Q"
+    def __init__(self, type, num, point, power):
+        super().__init__(type, num, point, power)
+        # self.power = "Q"
 
 class Card_K(Card):
-    def __init__(self, type, num, point):
-        super().__init__(type, num, point)
-        self.power = "K"
+    def __init__(self, type, num, point, power):
+        super().__init__(type, num, point, power)
+        # self.power = "K"

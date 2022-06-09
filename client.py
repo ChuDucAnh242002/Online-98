@@ -109,16 +109,17 @@ def handle_click(cur_player, pos):
     
     if cur_player.click1(pos):
         n.send("click1")
-        n.send("end turn")
-        return
-
     elif cur_player.click2(pos):
         n.send("click2")
-        n.send("end turn")
-        return
+        
+    game = n.send("get")
+    if game.play_card != None:
+        power = game.play_card.get_power()
+        if power != "Q" and power != "K":
+            n.send("end turn")
 
 def draw_winner(winner):
-    winner_text = "Winner: " + str(winner.id)
+    winner_text = "Survivor: " + str(winner.id)
     winner_text = WINNER_FONT.render(winner_text, 1, BLUE)
     WIN.blit(winner_text, (WIDTH //2 - winner_text.get_width() /2, HEIGHT //2 - winner_text.get_height() /2))
 
@@ -174,10 +175,12 @@ def main():
                     if increase_button != None:
                         if increase_button.click(pos):
                             n.send("increase")
+                            n.send("end turn")
                     
                     if decrease_button != None:
                         if decrease_button.click(pos):
                             n.send("decrease")
+                            n.send("end turn")
 
                     if kill_buttons != []:
                         for kill_button in kill_buttons:
@@ -185,11 +188,13 @@ def main():
                                 datas = ["kill", str(kill_button[0])]
                                 data = " ".join(datas)
                                 n.send(data)
+                                n.send("end turn")
                     
         if deck.empty():
             n.send("reset in match")
 
         if game.end_game() and len(game.players) > 1:
+            draw_win(game, deck, cur_player)
             draw_winner(game.winner)
             pygame.display.update()
             pygame.time.delay(5000)
@@ -228,8 +233,6 @@ def menu():
                     except:
                         print("Server Offline")
                         quit()
-
-        
 
 def quit():
     pygame.quit()

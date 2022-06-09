@@ -18,17 +18,17 @@ class Deck:
         for type in CARD_TYPES:
             for num in range(13):
                 if num == 0 and type == "hearts":
-                    card = Card_A_Heart(type, num, 0)
+                    card = Card_A_Heart(type, num, 0, "A_H")
                 elif num == 0 and type == "spades":
-                    card = Card_A_Spades(type, num, 0)
+                    card = Card_A_Spades(type, num, 0, "A_S")
                 elif num == 3:
-                    card = Card_4(type, num, 4)
+                    card = Card_4(type, num, 4, "4")
                 elif num == 10:
-                    card = Card_J(type, num, 0)
+                    card = Card_J(type, num, 0, "J")
                 elif num == 11:
-                    card = Card_Q(type, num, 0)
+                    card = Card_Q(type, num, 0, "Q")
                 elif num == 12:
-                    card = Card_K(type, num, 0)
+                    card = Card_K(type, num, 0, "K")
                 else:
                     card = Card(type, num, num +1)
                 cards.append(card)

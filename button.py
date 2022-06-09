@@ -10,7 +10,7 @@ FONT2 = pygame.font.SysFont('comicsans', 24)
 BLUE = (0, 0, 255)
 
 # Size
-BUTTON_WIDTH, BUTTON_HEIGHT = 500, 125
+BUTTON_WIDTH, BUTTON_HEIGHT = 400, 100
 BUTTON_WIDTH_2, BUTTON_HEIGHT_2 = 75, 75
 
 # Image
@@ -37,7 +37,7 @@ class Button:
         text = FONT2.render(self.text, 1, BLUE)
         if middle:
             win.blit(BLUE_BUTTON[self.num], (width //2 - self.rect.width /2, height //2 - self.rect.height /2))
-            win.blit(text, (width //2 - text.get_width() /2, height //2 - text.get_height() /2))
+            win.blit(text, (width //2 - text.get_width() /2, height //2 - text.get_height() /2 -5))
             return
         win.blit(BLUE_BUTTON[self.num], (self.rect.x, self.rect.y))
         win.blit(text, (self.rect.x +15, self.rect.y +18))

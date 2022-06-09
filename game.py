@@ -1,4 +1,5 @@
 from deck import Deck
+from player import Player
 
 class Game:
     def __init__(self, id):
@@ -41,10 +42,7 @@ class Game:
             self.sum = 0
 
     def kill_K(self, id):
-        player = None
-        for p in self.players:
-            if p.id == id:
-                player = p
+        player = self.find_player(id)
         if player != None:
             self.cur_player.turn = False
             player.turn = True
@@ -59,22 +57,46 @@ class Game:
                 player.die()
                 self.end_turn(player)
 
-    def delete_player(self, id):
-        for p in self.players:
-            if p.id == id:
-                player = p
-                parent = player.parent
-                child = player.child
-                if child != None and parent != None:
-                    child.parent = player.parent
-                    parent.child = player.child
-                elif player.child != None and player.parent == None:
-                    child.parent = None
-                elif player.child == None and player.parent != None:
-                    parent.child = None
+    def add_player(self, id):
+        if id == 0:
+            player = Player(id)
+            self.players.append(player)
+        else:
+            player = Player(id)
 
-                self.end_turn(player)
-                self.players.remove(player)
+            # connect to parent
+            parent = self.find_player(id -1)
+            if parent != None:
+                parent.child = player
+                player.parent = parent
+
+            # connect to child
+            child = self.find_player(id +1)
+            if child != None:
+                child.parent = player
+                player.child = child
+            self.players.append(player)
+
+    def delete_player(self, id):
+        player = self.find_player(id)
+        parent = player.parent
+        child = player.child
+        if child != None and parent != None:
+            child.parent = player.parent
+            parent.child = player.child
+        elif player.child != None and player.parent == None:
+            child.parent = None
+        elif player.child == None and player.parent != None:
+            parent.child = None
+
+        self.end_turn(player)
+        self.players.remove(player)
+
+    def find_player(self, id):
+        for player in self.players:
+            if player.id == id:
+                return player
+        return None
 
     def end_turn(self, cur_node):
         cur_node.turn = False
@@ -90,12 +112,11 @@ class Game:
     
         # Change the player turn
         if next_turn_id != -1:
-            for player in self.players:
-                if player.id == next_turn_id :
-                    if not player.killed:
-                        player.turn = True
-                    else:
-                        self.end_turn(player)
+            player = self.find_player(next_turn_id)
+            if not player.killed:
+                player.turn = True
+            else:
+                self.end_turn(player)
                         
     def end_game(self):
         count = 0
