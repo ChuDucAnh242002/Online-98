@@ -167,8 +167,7 @@ def main():
                 if cur_player.check_die(game.sum):
                     n.send("die")
 
-                if not cur_player.check_die(game.sum) and (increase_button != None or decrease_button != None or kill_buttons != None):
-
+                if not cur_player.check_die(game.sum) and (increase_button != None or decrease_button != None or kill_buttons != None) :
                     if not cur_player.locked and cur_player.turn:
                         handle_click(cur_player, pos)
 
@@ -188,7 +187,6 @@ def main():
                                 datas = ["kill", str(kill_button[0])]
                                 data = " ".join(datas)
                                 n.send(data)
-                                n.send("end turn")
                     
         if deck.empty():
             n.send("reset in match")

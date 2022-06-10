@@ -49,7 +49,7 @@ class Game:
             player.killed = True
             kill = True
             for card in player.cards:
-                if card.get_power() == "4":
+                if card.get_power() == "4" or card.get_power() == "K":
                     kill = False
                 self.play_cards.append(card)
 
@@ -89,7 +89,7 @@ class Game:
         elif player.child == None and player.parent != None:
             parent.child = None
 
-        self.end_turn(player)
+        # self.end_turn(player)
         self.players.remove(player)
 
     def find_player(self, id):
@@ -99,6 +99,9 @@ class Game:
         return None
 
     def end_turn(self, cur_node):
+        if cur_node == None:
+            return
+
         cur_node.turn = False
         next_turn_id = -1
         if cur_node.child == None :
@@ -113,7 +116,7 @@ class Game:
         # Change the player turn
         if next_turn_id != -1:
             player = self.find_player(next_turn_id)
-            if not player.killed:
+            if not player.killed and len(player.cards) != 0:
                 player.turn = True
             else:
                 self.end_turn(player)

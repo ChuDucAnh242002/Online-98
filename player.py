@@ -59,6 +59,10 @@ class Player(Node):
             back = False
         for num, card in enumerate(self.cards):
             card.draw(win, x + 90 + 110*num, y, back)
+        if self.turn:
+            turn_text = "Waiting"
+            turn_text = FONT.render(turn_text, 1, RED)
+            win.blit(turn_text, (x, y +25))
         if self.killed :
             killed_text = "Kill"
             killed_text = FONT.render(killed_text, 1, RED)
@@ -123,21 +127,22 @@ class Player(Node):
 
     def init_k(self, cur_node):
         pos = cur_node.id - self.id
-        if pos == 1 or pos == -5:
-            kill_button = Button(BUTTON_POS_K_1[0], BUTTON_POS_K_1[1], "", 2)
-            self.kill_buttons.append((cur_node.id, kill_button))
-        elif pos == 2 or pos == -4:
-            kill_button = Button(BUTTON_POS_K_2[0], BUTTON_POS_K_2[1], "", 2)
-            self.kill_buttons.append((cur_node.id, kill_button))
-        elif pos == 3 or pos == -3:
-            kill_button = Button(BUTTON_POS_K_3[0], BUTTON_POS_K_3[1], "", 2)
-            self.kill_buttons.append((cur_node.id, kill_button))
-        elif pos == 4 or pos == -2:
-            kill_button = Button(BUTTON_POS_K_4[0], BUTTON_POS_K_4[1], "", 2)
-            self.kill_buttons.append((cur_node.id, kill_button))
-        elif pos == 5 or pos == -1:
-            kill_button = Button(BUTTON_POS_K_5[0], BUTTON_POS_K_5[1], "", 2)
-            self.kill_buttons.append((cur_node.id, kill_button))
+        if len(cur_node.cards) != 0:
+            if pos == 1 or pos == -5:
+                kill_button = Button(BUTTON_POS_K_1[0], BUTTON_POS_K_1[1], "", 2)
+                self.kill_buttons.append((cur_node.id, kill_button))
+            elif pos == 2 or pos == -4:
+                kill_button = Button(BUTTON_POS_K_2[0], BUTTON_POS_K_2[1], "", 2)
+                self.kill_buttons.append((cur_node.id, kill_button))
+            elif pos == 3 or pos == -3:
+                kill_button = Button(BUTTON_POS_K_3[0], BUTTON_POS_K_3[1], "", 2)
+                self.kill_buttons.append((cur_node.id, kill_button))
+            elif pos == 4 or pos == -2:
+                kill_button = Button(BUTTON_POS_K_4[0], BUTTON_POS_K_4[1], "", 2)
+                self.kill_buttons.append((cur_node.id, kill_button))
+            elif pos == 5 or pos == -1:
+                kill_button = Button(BUTTON_POS_K_5[0], BUTTON_POS_K_5[1], "", 2)
+                self.kill_buttons.append((cur_node.id, kill_button))
 
     def del_button_start(self):
         self.start_button = None
