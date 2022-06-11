@@ -25,8 +25,8 @@ class Game:
     def add_play_card(self, card):
         self.play_card = card
         self.play_cards.append(card)
-        self.cur_player.play_card = card  
-        self.cur_player.check_play_card(self.sum)
+        self.cur_player.play_card = card
+        self.cur_player.check_play_card(self.sum, self)
         self.sum += card.point
         card.effect(self)  
 
@@ -77,8 +77,14 @@ class Game:
                 player.child = child
             self.players.append(player)
 
+        # Kick buttons
+        for p in self.players:
+            p.init_kick_buttons()
+
     def delete_player(self, id):
         player = self.find_player(id)
+        if player == None:
+            return
         parent = player.parent
         child = player.child
         if child != None and parent != None:
@@ -89,7 +95,6 @@ class Game:
         elif player.child == None and player.parent != None:
             parent.child = None
 
-        # self.end_turn(player)
         self.players.remove(player)
 
     def find_player(self, id):

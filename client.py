@@ -30,6 +30,7 @@ bg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'Background
 
 # Size and pos
 BUTTON_POS = (375, 312)
+BUTTON_POS_1 = (375, 350)
 PLAYER_POS_0_X, PLAYER_POS_0_Y = 300, 550
 PLAYER_POS_1_X, PLAYER_POS_1_Y = 0, 300
 PLAYER_POS_2_X, PLAYER_POS_2_Y = 300, 10
@@ -84,7 +85,12 @@ def draw_win(game, deck, cur_player):
     if start_button != None:
         start_button.draw(WIN)
 
-    elif game.ready == True:
+    kick_buttons = cur_player.get_kick_buttons()
+    if kick_buttons != []:
+        for kick_button in kick_buttons:
+            kick_button[1].draw(WIN, middle = False)
+
+    if game.ready == True:
         deck.draw(WIN)
         draw_sum(game)
         play_card = game.get_play_card()
@@ -104,24 +110,40 @@ def draw_win(game, deck, cur_player):
             for kill_button in kill_buttons:
                 kill_button[1].draw(WIN, middle = False)
 
+def draw_win_poker(game, deck, cur_player):
+    pass
+
 def handle_click(cur_player, pos):
-    global n
+    global n, game
     
     if cur_player.click1(pos):
         n.send("click1")
+        game = n.send("get")
+        if game.play_card != None:
+            power = game.play_card.get_power()
+            if power != "Q" and power != "K":
+                n.send("end turn")
+
     elif cur_player.click2(pos):
         n.send("click2")
-        
-    game = n.send("get")
-    if game.play_card != None:
-        power = game.play_card.get_power()
-        if power != "Q" and power != "K":
-            n.send("end turn")
-
+        game = n.send("get")
+        if game.play_card != None:
+            power = game.play_card.get_power()
+            if power != "Q" and power != "K":
+                n.send("end turn")
+    
 def draw_winner(winner):
     winner_text = "Survivor: " + str(winner.id)
     winner_text = WINNER_FONT.render(winner_text, 1, BLUE)
     WIN.blit(winner_text, (WIDTH //2 - winner_text.get_width() /2, HEIGHT //2 - winner_text.get_height() /2))
+
+def init_player():
+    # players = []
+    # for num in range(6):
+    #     if num == 0:
+    #         # player = Player(num)
+    #         players.append(player)
+    pass
 
 def main():
     global n
@@ -143,6 +165,7 @@ def main():
             break
         
         start_button = cur_player.get_start_button()
+        kick_buttons = cur_player.get_kick_buttons()
         increase_button = cur_player.get_increase_button()
         decrease_button = cur_player.get_decrease_button()
         kill_buttons = cur_player.get_kill_buttons()
@@ -163,6 +186,13 @@ def main():
                 if start_button != None:
                     if start_button.click(pos):
                         n.send("start")
+
+                if kick_buttons != []:
+                    for kick_button in kick_buttons:
+                        if kick_button[1].click(pos):
+                            datas = ["kick", str(kick_button[0])]
+                            data = " ".join(datas)
+                            n.send(data)
 
                 if cur_player.check_die(game.sum):
                     n.send("die")
@@ -202,16 +232,30 @@ def main():
 
         pygame.display.update()
 
+def main_poker():
+    global n
+    run = False
+
+    while run:
+        CLOCK.tick(FPS)
+
+        
+
 def menu():
     global n
 
     run = True
-    menu_button = Button(BUTTON_POS[0], BUTTON_POS[1], "Click to join the server", 0)
+    menu_button = Button(BUTTON_POS[0], BUTTON_POS[1], "98", 0)
+    # poker_button = Button(BUTTON_POS_1[0], BUTTON_POS_1[1], "Poker", 0)
+
+    offline_text = "Server Offline"
+    offline_text = SUM_FONT.render(offline_text, 1, BLUE)
 
     while run:
         CLOCK.tick(FPS)
         draw_bg()
-        menu_button.draw(WIN)
+        menu_button.draw(WIN, middle= False)
+        # poker_button.draw(WIN, middle= False)
 
         pygame.display.update()
 
@@ -226,11 +270,35 @@ def menu():
                     try:
                         run = False
                         n = Network()
-                        main()
-                        
+                        try:
+                            main()
+                        except: 
+                            quit()
                     except:
-                        print("Server Offline")
-                        quit()
+                        try:
+                            draw_bg()
+                            WIN.blit(offline_text, (WIDTH //2 - offline_text.get_width() /2,HEIGHT //2 - offline_text.get_height() /2))
+                            pygame.display.update()
+                            pygame.time.delay(3000)
+                        except:
+                            quit()
+
+                        
+
+    # draw_bg()
+    # WIN.blit(offline_text, (WIDTH //2 - offline_text.get_width() /2, offline_text.get_height() /2))
+    # pygame.display.update()
+    # pygame.time.delay(3000)
+                # if poker_button.click(pos):
+                #     try:
+                #         run = False
+                #         main_poker()
+                    
+                #     except: 
+                #         draw_bg()
+                #         WIN.blit(offline_text, (WIDTH //2 - offline_text.get_width() /2, HEIGHT //2 - offline_text.get_height() /2))
+                #         pygame.display.update()
+                #         pygame.time.delay(3000)
 
 def quit():
     pygame.quit()

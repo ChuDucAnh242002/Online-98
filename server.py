@@ -7,7 +7,7 @@ from game import Game
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server = "192.168.0.245"
+server = ""
 port = 5555
 
 try:
@@ -32,18 +32,12 @@ def threaded_client(conn, p, gameId):
     reply = ""
     while True:
         try: 
-            data = conn.recv(8192*3).decode()
+            data = conn.recv(8192*4).decode()
 
             if gameId in games:
                 game = games[gameId]
 
-                players = game.players
-                cur_player = None
-                for player in players:
-                    if player.id == p:
-                        cur_player = player
-                        break
-                
+                cur_player = game.find_player(p)
                 deck = game.deck
                 game.cur_player = cur_player
 
@@ -61,6 +55,7 @@ def threaded_client(conn, p, gameId):
                         game.play()
                         cur_player.turn = True
                         cur_player.del_button_start()
+                        cur_player.del_kick_buttons()
 
                     if data == "click1":
                         card = cur_player.get_card(0)
@@ -95,10 +90,16 @@ def threaded_client(conn, p, gameId):
 
                     if datas[0] == "kill":
                         id = datas[1]
+                        cur_player.locked = False
+                        cur_player.killed = False
                         game.kill_K(int(id))
                         game.play_card.power = None
-                        cur_player.locked = False
                         cur_player.del_button_K()
+
+                    if datas[0] == "kick":
+                        id = datas[1]
+                        game.delete_player(int(id))
+                        cur_player.del_kick_buttons()
 
                     if data == "end turn":
                         game.end_turn(cur_player)
@@ -107,7 +108,7 @@ def threaded_client(conn, p, gameId):
                                 cur_player.killed = False
                             else:
                                 cur_player.die()
-                        if game.sum > 98:
+                        if game.sum > 98 :
                             cur_player.die()
                             game.sum = game.sum - game.play_card.point
 

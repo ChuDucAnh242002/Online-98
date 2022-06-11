@@ -40,7 +40,7 @@ class Button:
             win.blit(text, (width //2 - text.get_width() /2, height //2 - text.get_height() /2 -5))
             return
         win.blit(BLUE_BUTTON[self.num], (self.rect.x, self.rect.y))
-        win.blit(text, (self.rect.x +15, self.rect.y +18))
+        win.blit(text, (self.rect.x +BLUE_BUTTON[self.num].get_width() //2 - text.get_width() /2, self.rect.y + BLUE_BUTTON[self.num].get_height() //2 - text.get_height() /2))
 
     def click(self, pos):
         if self.rect.collidepoint(pos[0], pos[1]):
