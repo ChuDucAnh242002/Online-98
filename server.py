@@ -3,11 +3,12 @@ from _thread import *
 import pickle
 
 # from player import Player
-from game import Game
+from game import Game_98, Game_Poker
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server = ""
+server = "192.168.0.101"
 port = 5555
 
 try:
@@ -97,9 +98,9 @@ def threaded_client(conn, p, gameId):
                         cur_player.del_button_K()
 
                     if datas[0] == "kick":
-                        id = datas[1]
-                        game.delete_player(int(id))
-                        cur_player.del_kick_buttons()
+                        id = int(datas[1])
+                        game.delete_player(id)
+                        cur_player.del_kick_buttons_id(id)
 
                     if data == "end turn":
                         game.end_turn(cur_player)
@@ -157,7 +158,7 @@ def main():
                     gameId = player_num //MAX_PER_ROOM
 
             if idCount %MAX_PER_ROOM == 1:
-                games[gameId] = Game(gameId)
+                games[gameId] = Game_98(gameId)
                 games[gameId].add_player(p)
                 print("Creating a new game...")
 

@@ -1,5 +1,5 @@
 from deck import Deck
-from player import Player
+from player import Player_98, Player_Poker
 
 class Game:
     def __init__(self, id):
@@ -7,10 +7,7 @@ class Game:
         self.players = []
         self.deck = Deck()
         self.ready = False
-        self.play_card = None
-        self.play_cards = []
         self.cur_player = None
-        self.sum = 0
         self.winner = None
 
     def play(self):
@@ -22,47 +19,12 @@ class Game:
                 for _ in range(2):
                     self.deck.deal(player)
 
-    def add_play_card(self, card):
-        self.play_card = card
-        self.play_cards.append(card)
-        self.cur_player.play_card = card
-        self.cur_player.check_play_card(self.sum, self)
-        self.sum += card.point
-        card.effect(self)  
-
-    def get_play_card(self):
-        return self.play_card
-
-    def increase_Q(self):
-        self.sum += 30
-
-    def decrease_Q(self):
-        self.sum -= 30
-        if self.sum < 0:
-            self.sum = 0
-
-    def kill_K(self, id):
-        player = self.find_player(id)
-        if player != None:
-            self.cur_player.turn = False
-            player.turn = True
-            player.killed = True
-            kill = True
-            for card in player.cards:
-                if card.get_power() == "4" or card.get_power() == "K":
-                    kill = False
-                self.play_cards.append(card)
-
-            if kill:
-                player.die()
-                self.end_turn(player)
-
-    def add_player(self, id):
+    def add_player(self, id, game_class):
         if id == 0:
-            player = Player(id)
+            player = game_class(id)
             self.players.append(player)
         else:
-            player = Player(id)
+            player = game_class(id)
 
             # connect to parent
             parent = self.find_player(id -1)
@@ -125,6 +87,59 @@ class Game:
                 player.turn = True
             else:
                 self.end_turn(player)
+
+    def reset(self):
+        self.deck = Deck()
+        self.ready = False
+        self.winner = None
+        
+        for player in self.players:
+            player.reset()
+
+class Game_98(Game):
+    def __init__(self, id):
+        super().__init__(id)
+        self.play_card = None
+        self.play_cards = []
+        self.sum = 0
+
+    def add_play_card(self, card):
+        self.play_card = card
+        self.play_cards.append(card)
+        self.cur_player.play_card = card
+        self.cur_player.check_play_card(self.sum)
+        self.sum += card.point
+        card.effect(self)  
+
+    def get_play_card(self):
+        return self.play_card
+
+    def add_player(self, id):
+        super().add_player(id, Player_98)
+
+    def increase_Q(self):
+        self.sum += 30
+
+    def decrease_Q(self):
+        self.sum -= 30
+        if self.sum < 0:
+            self.sum = 0
+
+    def kill_K(self, id):
+        player = self.find_player(id)
+        if player != None:
+            self.cur_player.turn = False
+            player.turn = True
+            player.killed = True
+            kill = True
+            for card in player.cards:
+                if card.get_power() == "4" or card.get_power() == "K":
+                    kill = False
+                self.play_cards.append(card)
+
+            if kill:
+                player.die()
+                self.end_turn(player)
                         
     def end_game(self):
         count = 0
@@ -140,12 +155,14 @@ class Game:
         return False
 
     def reset(self):
-        self.deck = Deck()
-        self.ready = False
         self.play_card = None
         self.play_cards = []
         self.sum = 0
-        self.winner = None
+        super().reset()
 
-        for player in self.players:
-            player.reset()
+class Game_Poker(Game):
+    def __init__(self, id):
+        super().__init__(id)
+
+    def add_player(self, id):
+        super().add_player(id, Player_Poker)

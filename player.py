@@ -7,6 +7,7 @@ import pygame
 
 from card import CARD_WIDTH, CARD_HEIGHT
 from button import Button
+from chip import Chip
 
 FONT = pygame.font.SysFont('comicsans', 24)
 
@@ -33,17 +34,10 @@ class Player(Node):
     def __init__(self, id):
         super().__init__(id)
         self.cards = []
-        self.rect1 = pygame.Rect(390, 550, CARD_WIDTH, CARD_HEIGHT)
-        self.rect2 = pygame.Rect(500, 550, CARD_WIDTH, CARD_HEIGHT)
-        self.start_button = self.init_start_button()
-        self.kick_buttons = []
-        self.increase_button = None
-        self.decrease_button = None
-        self.kill_buttons = []
-        self.killed = False
-        self.play_card = None
         self.locked = False
         self.turn = False
+        self.start_button = self.init_start_button()
+        self.kick_buttons = []
 
     def init_start_button(self):
         start_button = None
@@ -63,32 +57,21 @@ class Player(Node):
         back = True
         if cur:
             back = False
+        # Player cards
         for num, card in enumerate(self.cards):
             card.draw(win, x + 90 + 110*num, y, back)
+
+        # Player turn
         if self.turn:
             turn_text = "Waiting"
             turn_text = FONT.render(turn_text, 1, RED)
             win.blit(turn_text, (x, y +25))
-        if self.killed :
-            killed_text = "Kill"
-            killed_text = FONT.render(killed_text, 1, RED)
-            win.blit(killed_text, (x, y+ 50))
 
     def add_card(self, card):
         self.cards.append(card)
 
     def remove_card(self, card):
         self.cards.remove(card)
-
-    def click1(self, pos):
-        if self.rect1.collidepoint(pos):
-            return True
-        return False
-
-    def click2(self, pos):
-        if self.rect2.collidepoint(pos):
-            return True
-        return False
 
     def get_card(self, num):
         return self.cards[num]
@@ -99,31 +82,11 @@ class Player(Node):
     def get_kick_buttons(self):
         return self.kick_buttons
 
-    def get_increase_button(self):
-        return self.increase_button
-
-    def get_decrease_button(self):
-        return self.decrease_button
-
-    def get_kill_buttons(self):
-        return self.kill_buttons
-
-    def check_play_card(self, sum, game):
-        if self.play_card.power == "Q":
-            if sum + 30 <= 98:
-                self.increase_button = Button(BUTTON_POS_2[0], BUTTON_POS_2[1], "+30", 1)
-            self.decrease_button = Button(BUTTON_POS_3[0], BUTTON_POS_3[1], "-30", 1)
-
-        if self.play_card.power == "K":
-            self.init_k_child(self.child, self.id)
-            self.init_k_parent(self.parent, self.id)
-
     def init_k_child(self, child_node, p, kick = False):
         if child_node == None:
             return
 
         self.init_k(child_node, kick)
-        
         self.init_k_child(child_node.child, p, kick)
 
     def init_k_parent(self, parent_node, p, kick = False):
@@ -131,7 +94,6 @@ class Player(Node):
             return
 
         self.init_k(parent_node, kick)
-
         self.init_k_parent(parent_node.parent, p, kick)
 
     def init_k(self, cur_node, kick):
@@ -167,6 +129,66 @@ class Player(Node):
     def del_kick_buttons(self):
         self.kick_buttons = []
 
+    def del_kick_buttons_id(self, id):
+        for kick_button in self.kick_buttons:
+            if int(kick_button[0]) == id:
+                self.kick_buttons.remove(kick_button)
+
+    def reset(self):
+        self.cards = []
+        self.start_button = self.init_start_button()
+        self.locked = False
+        self.turn = False
+
+class Player_98(Player):
+    def __init__(self, id):
+        super().__init__(id)
+        self.rect1 = pygame.Rect(390, 550, CARD_WIDTH, CARD_HEIGHT)
+        self.rect2 = pygame.Rect(500, 550, CARD_WIDTH, CARD_HEIGHT)
+        self.increase_button = None
+        self.decrease_button = None
+        self.kill_buttons = []
+        self.killed = False
+        self.play_card = None
+
+    def draw(self, win, x, y, cur = False):
+        super().draw(win, x, y, cur)
+
+        # Player get killed
+        if self.killed :
+            killed_text = "Kill"
+            killed_text = FONT.render(killed_text, 1, RED)
+            win.blit(killed_text, (x, y+ 50))
+
+    def click1(self, pos):
+        if self.rect1.collidepoint(pos):
+            return True
+        return False
+
+    def click2(self, pos):
+        if self.rect2.collidepoint(pos):
+            return True
+        return False
+
+    def get_increase_button(self):
+        return self.increase_button
+
+    def get_decrease_button(self):
+        return self.decrease_button
+
+    def get_kill_buttons(self):
+        return self.kill_buttons
+
+    def check_play_card(self, sum):
+        if self.play_card.power == "Q":
+            if sum + 30 <= 98:
+                self.increase_button = Button(BUTTON_POS_2[0], BUTTON_POS_2[1], "+30", 1)
+            self.decrease_button = Button(BUTTON_POS_3[0], BUTTON_POS_3[1], "-30", 1)
+
+        if self.play_card.power == "K":
+            self.init_k_child(self.child, self.id)
+            self.init_k_parent(self.parent, self.id)
+
     def del_button_Q(self):
         self.increase_button = None
         self.decrease_button = None
@@ -189,13 +211,26 @@ class Player(Node):
         self.locked = True
 
     def reset(self):
-        self.cards = []
-        self.start_button = self.init_start_button()
+        super().reset()
         self.increase_button = None
         self.decrease_button = None
         self.kill_buttons = []
         self.killed = False
         self.play_card = None
-        self.locked = False
-        self.turn = False
         
+class Player_Poker(Player):
+    def __init__(self, id):
+        super().__init__(id)
+        self.big_blind = False
+        self.small_blind = False
+        self.chips = None
+
+    def draw(self, win, x, y, cur = False):
+        super().draw(win, x, y, cur)
+
+        if self.big_blind or self.small_blind:
+            blind_text = ""
+            if self.big_blind: blind_text = "Big Blind"
+            elif self.small_blind: blind_text = "SM. Blind"
+            blind_text = FONT.render(blind_text, 1, RED)
+            win.blit(blind_text, (x, y +50))

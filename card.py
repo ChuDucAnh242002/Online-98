@@ -15,8 +15,8 @@ CARD_BACK = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG
 for card_type in CARD_TYPES:
     card_images = []
     for card_num in CARD_NUMS:
-        cardname = f"card_{card_type}_{card_num}.png"
-        card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG', 'Cards', cardname)), (CARD_WIDTH, CARD_HEIGHT))
+        card_name = f"card_{card_type}_{card_num}.png"
+        card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG', 'Cards', card_name)), (CARD_WIDTH, CARD_HEIGHT))
         card_images.append(card_image)
     CARDS[card_type] = card_images
 
