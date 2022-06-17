@@ -1,5 +1,5 @@
 from deck import Deck
-from player import Player_98, Player_Poker
+from player import Player_98, Player_Poker, CHIP_POS
 
 class Game:
     def __init__(self, id):
@@ -163,6 +163,14 @@ class Game_98(Game):
 class Game_Poker(Game):
     def __init__(self, id):
         super().__init__(id)
+
+    def init_chips(self, player):
+        # self.chipss
+        self.chips_color = player.chips_color
+        self.chips_amount = [0, 0, 0, 0]
+
+    def draw(self, win, x, y):
+        win.blit()
 
     def add_player(self, id):
         super().add_player(id, Player_Poker)

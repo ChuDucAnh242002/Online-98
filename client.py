@@ -32,34 +32,20 @@ bg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'Background
 # Size and pos
 BUTTON_POS = (375, 250)
 BUTTON_POS_1 = (375, 360)
-PLAYER_POS_0_X, PLAYER_POS_0_Y = 300, 550
-PLAYER_POS_1_X, PLAYER_POS_1_Y = 0, 300
-PLAYER_POS_2_X, PLAYER_POS_2_Y = 300, 10
-PLAYER_POS_3_X, PLAYER_POS_3_Y = 750, 10
-PLAYER_POS_4_X, PLAYER_POS_4_Y = 850, 300
-PLAYER_POS_5_X, PLAYER_POS_5_Y = 750, 550
+PLAYER_POS = [(300, 550), (0, 300), (300, 10), (750, 10), (850, 300), (750, 550)]
 
 
 def draw_bg():
     WIN.blit(bg, (0, 0))  
 
 def draw_players(cur_player):
-    cur_player.draw(WIN, PLAYER_POS_0_X, PLAYER_POS_0_Y, True)
+    cur_player.draw(WIN, PLAYER_POS[0][0], PLAYER_POS[0][1], True)
     draw_child(cur_player.child, cur_player.id)
     draw_parent(cur_player.parent, cur_player.id)
 
 def draw_pos(cur_player, p):
     pos = cur_player.id - p
-    if pos == 1 or pos == -5:
-        cur_player.draw(WIN, PLAYER_POS_1_X, PLAYER_POS_1_Y)
-    elif pos == 2 or pos == -4:
-        cur_player.draw(WIN, PLAYER_POS_2_X, PLAYER_POS_2_Y)
-    elif pos == 3 or pos == -3:
-        cur_player.draw(WIN, PLAYER_POS_3_X, PLAYER_POS_3_Y)
-    elif pos == 4 or pos == -2:
-        cur_player.draw(WIN, PLAYER_POS_4_X, PLAYER_POS_4_Y)
-    elif pos == 5 or pos == -1:
-        cur_player.draw(WIN, PLAYER_POS_5_X, PLAYER_POS_5_Y)
+    cur_player.draw(WIN, PLAYER_POS[pos][0], PLAYER_POS[pos][1])
 
 def draw_child(cur_player, p):
     if cur_player == None:
@@ -134,7 +120,12 @@ def handle_click(cur_player, pos):
             power = game.play_card.get_power()
             if power != "Q" and power != "K":
                 n.send("end turn")
-    
+
+def handle_click_poker(cur_player, pos):
+    if cur_player.click(pos):
+        rect_num = cur_player.get_rect_num()
+        cur_player.remove_chip(rect_num)
+        
 def draw_winner(winner):
     winner_text = "Survivor: " + str(winner.id)
     winner_text = WINNER_FONT.render(winner_text, 1, BLUE)
@@ -246,6 +237,7 @@ def main_poker():
     cur_player = game.find_player(p)
     player_5 = game.find_player(5)
     game.cur_player = cur_player
+    game.init_chips(cur_player)
 
     run = True
 
@@ -273,14 +265,14 @@ def main_poker():
                         cur_player.del_button_start()
                         cur_player.del_kick_buttons()
 
-                    if kick_buttons != []:
-                        for kick_button in kick_buttons:
-                            if kick_button[1].click(pos):
-                                id = int(kick_button[0])
-                                game.delete_player(id)
-                                cur_player.del_kick_buttons_id(id)
+                if kick_buttons != []:
+                    for kick_button in kick_buttons:
+                        if kick_button[1].click(pos):
+                            id = int(kick_button[0])
+                            game.delete_player(id)
+                            cur_player.del_kick_buttons_id(id)
+                handle_click_poker(cur_player, pos)
 
-         
         draw_win_poker(game, deck, cur_player)
 
         pygame.display.update()
@@ -341,7 +333,8 @@ if __name__ == "__main__":
     while run:
         try:
             menu()
-        except:
+        except ValueError as e:
+            print(e)
             run = False
             print("You have been kicked")
             quit()

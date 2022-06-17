@@ -7,8 +7,10 @@ import pygame
 
 from card import CARD_WIDTH, CARD_HEIGHT
 from button import Button
-from chip import Chip
+from chip import Stack
 
+# Font
+AMOUNT_FONT = pygame.font.SysFont("comicsans", 36)
 FONT = pygame.font.SysFont('comicsans', 24)
 
 BLACK = (0, 0, 0)
@@ -18,11 +20,13 @@ RED = (255, 0,0)
 BUTTON_POS = (375, 312)
 BUTTON_POS_2 = (100, 600)
 BUTTON_POS_3 = (180, 600)
-BUTTON_POS_K_1 = (0, 350) 
-BUTTON_POS_K_2 = (300, 60)
-BUTTON_POS_K_3 = (750, 60)
-BUTTON_POS_K_4 = (850, 350)
-BUTTON_POS_K_5 = (750, 600)
+BUTTON_POS_K = [(300, 600), (0, 350), (300, 60), (750, 60), (850, 350), (750, 600)]
+CHIP_POS = {
+    0: (10, 500),
+    1: (135, 500),
+    2: (10, 625),
+    3: (135, 625)
+}
 
 class Node:
     def __init__(self, id):
@@ -107,22 +111,9 @@ class Player(Node):
 
     def create_button(self, cur_node):
         pos = cur_node.id - self.id
-        if pos == 1 or pos == -5:
-                button = Button(BUTTON_POS_K_1[0], BUTTON_POS_K_1[1], "", 2)
-                return button
-        elif pos == 2 or pos == -4:
-                button = Button(BUTTON_POS_K_2[0], BUTTON_POS_K_2[1], "", 2)
-                return button
-        elif pos == 3 or pos == -3:
-                button = Button(BUTTON_POS_K_3[0], BUTTON_POS_K_3[1], "", 2)
-                return button
-        elif pos == 4 or pos == -2:
-                button = Button(BUTTON_POS_K_4[0], BUTTON_POS_K_4[1], "", 2)
-                return button
-        elif pos == 5 or pos == -1:
-                button = Button(BUTTON_POS_K_5[0], BUTTON_POS_K_5[1], "", 2)
-                return button
-
+        button = Button(BUTTON_POS_K[int(pos)][0], BUTTON_POS_K[int(pos)][1], "", 2)
+        return button
+   
     def del_button_start(self):
         self.start_button = None
 
@@ -223,7 +214,29 @@ class Player_Poker(Player):
         super().__init__(id)
         self.big_blind = False
         self.small_blind = False
-        self.chips = None
+        self.stack = Stack(2, "1:2")
+        self.chips = self.stack.chips
+        self.chips_color = []
+        self.chips_amount = []
+        self.init_chips()
+        self.rects = self.init_rects()
+        self.rect = None
+        self.rect_num = None
+
+    def init_rects(self):
+        rects = []
+        for index in range(4):
+            rect = pygame.Rect(CHIP_POS[index][0], CHIP_POS[index][1], 75, 75)
+            rects.append(rect)
+        return rects
+
+    def init_chips(self):
+        for item in self.chips.items():
+            color = item[0]
+            value = item[1]
+            amount = len(value)
+            self.chips_color.append(color)
+            self.chips_amount.append(amount)
 
     def draw(self, win, x, y, cur = False):
         super().draw(win, x, y, cur)
@@ -234,3 +247,30 @@ class Player_Poker(Player):
             elif self.small_blind: blind_text = "SM. Blind"
             blind_text = FONT.render(blind_text, 1, RED)
             win.blit(blind_text, (x, y +50))
+
+        if cur:
+            index = 0
+            for value in self.chips.values():
+                if len(value):
+                    chip = value[0]
+                    chip.draw(win, CHIP_POS[index][0], CHIP_POS[index][1])
+                    index += 1
+
+            for index_a, amount in enumerate(self.chips_amount):
+                amount = str(amount)
+                amount_text = AMOUNT_FONT.render(amount, 1, BLACK)
+                win.blit(amount_text, (CHIP_POS[index_a][0] + 38 - amount_text.get_width() /2, CHIP_POS[index_a][1] + 75))
+
+    def click(self, pos):
+        for num, rect in enumerate(self.rects):
+            if rect.collidepoint(pos):
+                self.rect = rect
+                self.rect_num = num
+                return True
+        return False
+
+    def get_rect_num(self): return self.rect_num
+
+    def remove_chip(self, num):
+        self.chips_amount[num] -= 1
+    
