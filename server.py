@@ -5,10 +5,9 @@ import pickle
 # from player import Player
 from game import Game_98, Game_Poker
 
-
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server = "192.168.0.101"
+server = "172.104.234.136"
 port = 5555
 
 try:
@@ -117,16 +116,21 @@ def threaded_client(conn, p, gameId):
                         cur_player.die()
                         game.end_turn(cur_player)
                         
+                    if data == "delete game":
+                        del games[gameId]
+                        print("Closing game", gameId)
+                        break
                     reply = game
                     conn.sendall(pickle.dumps(reply))
             else:
                 print("No game")
         except socket.error as e:
             print(e)
+            print("socket error 1")
             break
     print("Lost connection")
     try:
-        if len(game.players) == 0:
+        if len(games[gameId].players) <= 1:
             del games[gameId]
             print("Closing game", gameId)
     except:
@@ -134,7 +138,9 @@ def threaded_client(conn, p, gameId):
     
     idCount -= 1
     player_num -= 1
-    game.delete_player(p)
+    try:
+        games[gameId].delete_player(p)
+    except: pass
     conn.close()
 
 def main():
@@ -165,7 +171,12 @@ def main():
             elif not games[gameId].ready:
                 games[gameId].add_player(p)
 
-            start_new_thread(threaded_client, (conn, p, gameId))
+            try:
+                start_new_thread(threaded_client, (conn, p, gameId))
+            except socket.error as e:
+                print(str(e))
+                del games[gameId]
+
                  
 if __name__ == "__main__":
     main()

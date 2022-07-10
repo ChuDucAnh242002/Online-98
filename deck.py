@@ -4,8 +4,8 @@ import pygame
 from card import Card, Card_4, Card_A_Heart, Card_A_Spades, Card_J, Card_Q, Card_K, CARD_TYPES, CARD_BACK
 
 # Size
-DECK_WIDTH, DECK_HEIGHT = 300, 300
-DECK_POS_X, DECK_POS_Y = 300, 200
+DECK_WIDTH, DECK_HEIGHT = 210, 285
+DECK_POS_X, DECK_POS_Y = 400, 200
 
 class Deck:
     def __init__(self):
@@ -17,9 +17,9 @@ class Deck:
         cards = []
         for type in CARD_TYPES:
             for num in range(13):
-                if num == 0 and type == "hearts":
+                if num == 0 and type == "Hearts":
                     card = Card_A_Heart(type, num, 0, "A_H")
-                elif num == 0 and type == "spades":
+                elif num == 0 and type == "Spades":
                     card = Card_A_Spades(type, num, 0, "A_S")
                 elif num == 3:
                     card = Card_4(type, num, 4, "4")

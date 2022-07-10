@@ -282,13 +282,13 @@ def menu():
 
     run = True
     menu_button = Button(BUTTON_POS[0], BUTTON_POS[1], "98", 0)
-    poker_button = Button(BUTTON_POS_1[0], BUTTON_POS_1[1], "Poker", 0)
+    # poker_button = Button(BUTTON_POS_1[0], BUTTON_POS_1[1], "Poker", 0)
 
     while run:
         CLOCK.tick(FPS)
         draw_bg()
         menu_button.draw(WIN, middle= False)
-        poker_button.draw(WIN, middle= False)
+        # poker_button.draw(WIN, middle= False)
 
         pygame.display.update()
 
@@ -303,10 +303,11 @@ def menu():
                     run = False
                     n = Network()
                     connect(main_98())
-                if poker_button.click(pos):
-                    run = False
+
+                # if poker_button.click(pos):
+                #     run = False
                     # n = Network()
-                    connect(main_poker())
+                    # connect(main_poker())
 
 def connect(main):
     # global n 
@@ -323,7 +324,6 @@ def connect(main):
         except:
             quit()
     
-
 def quit():
     pygame.quit()
     sys.exit()

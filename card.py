@@ -1,12 +1,13 @@
 import pygame
 import os
 
-CARD_TYPES = ["spades", "clubs", "diamonds", "hearts"]
-CARD_NUMS = ["A", "02", "03", "04", "05", "06", "07", "08", "09", "10", "J", "Q", "K"]
+CARD_TYPES = ["Spades", "Clubs", "Diamonds", "Hearts"]
+CARD_NUMS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
 # Size
-CARD_WIDTH, CARD_HEIGHT = 150, 150
-CARD_POS = (500, 200)
+CARD_WIDTH, CARD_HEIGHT = 98, 152
+
+CARD_POS = (630, 200)
 
 # Dict of card sorted by type
 CARDS = {}
@@ -15,7 +16,7 @@ CARD_BACK = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG
 for card_type in CARD_TYPES:
     card_images = []
     for card_num in CARD_NUMS:
-        card_name = f"card_{card_type}_{card_num}.png"
+        card_name = f"card{card_type}{card_num}.png"
         card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'PNG', 'Cards', card_name)), (CARD_WIDTH, CARD_HEIGHT))
         card_images.append(card_image)
     CARDS[card_type] = card_images
@@ -34,7 +35,7 @@ class Card:
         win.blit(CARDS[self.type][self.num], (x, y))
 
     def draw_play(self, win):
-        image = pygame.transform.scale(CARDS[self.type][self.num], (300, 300))
+        image = pygame.transform.scale(CARDS[self.type][self.num], (210, 285))
         win.blit(image, (CARD_POS[0], CARD_POS[1]))
 
     def get_power(self):

@@ -63,7 +63,7 @@ class Player(Node):
             back = False
         # Player cards
         for num, card in enumerate(self.cards):
-            card.draw(win, x + 90 + 110*num, y, back)
+            card.draw(win, x + 100 + 110*num, y, back)
 
         # Player turn
         if self.turn:
