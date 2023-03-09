@@ -12,12 +12,12 @@
 - Lose: Don't have any card to play
 
 ## Rule
-- This game is about calculating the sum:
+This game is about calculating the sum:
 - At first, the sum is 0, after each time a player plays a number cards (1,2,3,...), add to that sum
 - If the player plays a card which adds to the sum larger than 98, the player lose
 - For example: sum is 96, player plays 3 of space. The total is 99 which make player loses, the sum reset to 96 since the card is invalid
 
-Special Card
+Special Card:
 - A of space: reset the sum value to 0
 - A of heath: put the sum value to 98
 - Jack: the value of the card is 0
