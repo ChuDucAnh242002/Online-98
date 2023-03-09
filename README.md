@@ -1,9 +1,5 @@
 # Online-98
-
-## Description
-- The game name is 98 and it is designed by students of Le Hong Phong High School
-- The game is build using pygame frame work 
-- The server is build using socket frame work
+The game is designed by students of Le Hong Phong High School in Viet Nam and is build using pygame and socket frame works.
 
 ## Basics
 - Player: 2+
